@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "115450475436",
+    "project_id": "tawseela-app-88dae",
+    "storage_bucket": "tawseela-app-88dae.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:115450475436:android:39a8b600edc5a8c84ac009",
+        "android_client_info": {
+          "package_name": "com.koshy.koshy.motorent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArZa-Z8MD3yJ0Oh6QmPUHwQAs8flNL230"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
