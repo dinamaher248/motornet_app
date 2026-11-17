@@ -61,16 +61,14 @@ class _VendorAddProductScreenState extends State<VendorAddProductScreen> {
   void _submit() {
     if (!_formKey.currentState!.validate()) return;
     final isPhotoMode = AuthPrefs.isVendorBookingsMode;
-    if (!widget.isEdit && _imagePath == null) {
+    // الصورة مطلوبة في «المنتجات» (الطلبات) فقط — اختيارية في «صور النشاط».
+    if (!isPhotoMode && !widget.isEdit && _imagePath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            isPhotoMode ? 'صورة النشاط مطلوبة' : 'صورة المنتج مطلوبة',
-          ),
-        ),
+        const SnackBar(content: Text('صورة المنتج مطلوبة')),
       );
       return;
     }
+    // لا يوجد حقل سعر في «صور النشاط»؛ قيمة افتراضية ثابتة غير ظاهرة للمستخدم.
     final price = isPhotoMode
         ? 1.0
         : (double.tryParse(_priceCtrl.text.trim()) ?? 0);
@@ -111,7 +109,7 @@ class _VendorAddProductScreenState extends State<VendorAddProductScreen> {
               CreateVendorProductParams(
                 name: name,
                 price: price,
-                imagePath: _imagePath!,
+                imagePath: _imagePath,
                 description: _descCtrl.text.trim().isEmpty
                     ? null
                     : _descCtrl.text.trim(),
@@ -194,7 +192,7 @@ class _VendorAddProductScreenState extends State<VendorAddProductScreen> {
                                   const SizedBox(height: 8),
                                   Text(
                                     isPhotoMode
-                                        ? 'صورة النشاط (مطلوبة)'
+                                        ? 'صورة النشاط (اختيارية)'
                                         : 'صورة المنتج (مطلوبة)',
                                     style: const TextStyle(
                                       fontFamily: 'Cairo',
@@ -223,7 +221,7 @@ class _VendorAddProductScreenState extends State<VendorAddProductScreen> {
                   controller: _nameCtrl,
                   decoration: InputDecoration(
                     labelText: isPhotoMode
-                        ? 'وصف الصورة (اختياري)'
+                        ? 'عنوان رئيسي (اختياري)'
                         : 'اسم المنتج',
                     border: const OutlineInputBorder(),
                   ),

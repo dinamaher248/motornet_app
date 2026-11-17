@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:motorent/data/remote/url_api.dart';
 import 'package:motorent/features/services/domain/entities/service_entities.dart';
 import 'package:motorent/features/services/presentation/bloc/service_bloc.dart';
+import 'package:motorent/features/services/presentation/pages/my_bookings_screen.dart';
+import 'package:motorent/features/services/presentation/widgets/reservation_form_section.dart';
 import 'package:motorent/features/services/services_injection.dart';
 import 'package:motorent/services/place_booking_service.dart';
 import 'package:motorent/widgets/auth/auth_theme.dart';
@@ -11,7 +13,15 @@ import 'package:motorent/widgets/auth/auth_theme.dart';
 class PlaceBookingScreen extends StatefulWidget {
   final int storeId;
 
-  const PlaceBookingScreen({super.key, required this.storeId});
+  /// تصنيف الحجز (مثل فنادق) — يحدد حقول النموذج الديناميكي.
+  /// لو لم يُمرَّر نستخدم `store.categoryId` القادم من السيرفر.
+  final int? categoryId;
+
+  const PlaceBookingScreen({
+    super.key,
+    required this.storeId,
+    this.categoryId,
+  });
 
   @override
   State<PlaceBookingScreen> createState() => _PlaceBookingScreenState();
@@ -32,7 +42,7 @@ class _PlaceBookingScreenState extends State<PlaceBookingScreen> {
         backgroundColor: const Color(0xFFF7F7F8),
         appBar: AppBar(
           title: const Text(
-            'حجز ساعة',
+            'طلب حجز',
             style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
           ),
           centerTitle: true,
@@ -128,7 +138,13 @@ class _PlaceBookingScreenState extends State<PlaceBookingScreen> {
                   ),
                 ],
                 const SizedBox(height: 22),
-                if (!_showCall)
+                if ((store.categoryId ?? widget.categoryId) != null)
+                  ReservationFormSection(
+                    merchantId: store.id,
+                    categoryId: (store.categoryId ?? widget.categoryId)!,
+                    onSubmitted: _onSubmitted,
+                  )
+                else if (!_showCall)
                   SizedBox(
                     width: double.infinity,
                     height: 52,
@@ -181,6 +197,16 @@ class _PlaceBookingScreenState extends State<PlaceBookingScreen> {
           },
         ),
       ),
+    );
+  }
+
+  void _onSubmitted(String message) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    // بعد إرسال الاستفسار نفتح «حجوزاتي» لمتابعة رد المكان.
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
     );
   }
 

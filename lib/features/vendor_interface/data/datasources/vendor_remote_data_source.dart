@@ -213,7 +213,8 @@ class VendorRemoteDataSourceImpl implements VendorRemoteDataSource {
         'price': params.price,
         'is_active': 1,
         if (params.description != null) 'description': params.description,
-        'image': await MultipartFile.fromFile(params.imagePath),
+        if (params.imagePath != null && params.imagePath!.isNotEmpty)
+          'image': await MultipartFile.fromFile(params.imagePath!),
       };
       var response = await dio.post(
         vendorProductsEP,

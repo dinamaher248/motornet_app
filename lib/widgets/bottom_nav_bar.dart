@@ -212,12 +212,13 @@ class BuildBottomNavBar extends StatelessWidget {
                             child: _navItem(
                               index: 1,
                               icon: Icons.photo_library_outlined,
+                              // «المنتجات» فقط لقسم الطلبات، والحجوزات تبقى «صور النشاط»
                               title: _t(
                                 context,
                                 'Photos',
                                 isMerchantBookings
                                     ? 'صور النشاط'
-                                    : 'صور المكان',
+                                    : 'المنتجات',
                               ),
                               context: context,
                             ),
@@ -266,10 +267,9 @@ class BuildBottomNavBar extends StatelessWidget {
                           Expanded(
                             child: _navItem(
                               index: 2,
-                              icon: Icons.notifications_active,
-                              title: _t(context, 'Notifications', 'الإشعارات'),
+                              icon: Icons.event_note_outlined,
+                              title: _t(context, 'Reservations', 'الحجوزات'),
                               context: context,
-                              badgeCount: notificationBadgeCount,
                             ),
                           )
                         else if (!isMerchant)
@@ -281,7 +281,7 @@ class BuildBottomNavBar extends StatelessWidget {
                               context: context,
                             ),
                           ),
-                        if (isMerchant && !isMerchantServices && !isMerchantBookings)
+                        if (isMerchant && !isMerchantServices)
                           Expanded(
                             child: _navItem(
                               index: 3,
@@ -296,11 +296,7 @@ class BuildBottomNavBar extends StatelessWidget {
                             index: isDriver
                                 ? 3
                                 : isMerchant
-                                    ? (isMerchantServices
-                                        ? 2
-                                        : isMerchantBookings
-                                            ? 3
-                                            : 4)
+                                    ? (isMerchantServices ? 2 : 4)
                                     : 4,
                             icon: Icons.person_rounded,
                             title: _t(context, 'Profile', 'حسابي'),

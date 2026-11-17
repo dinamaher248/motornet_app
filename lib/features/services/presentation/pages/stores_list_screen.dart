@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:motorent/features/services/core/utils/location_util.dart';
+import 'package:motorent/features/services/data/datasources/service_remote_data_source.dart';
 import 'package:motorent/features/services/domain/entities/service_entities.dart';
 import 'package:motorent/features/services/presentation/bloc/service_bloc.dart';
 import 'package:motorent/features/services/presentation/pages/store_details_screen.dart';
 import 'package:motorent/features/services/services_injection.dart';
+import 'package:motorent/services/place_booking_service.dart';
 import 'package:motorent/widgets/auth/auth_theme.dart';
 import 'package:motorent/widgets/services/nearby_store_card.dart';
 
@@ -58,30 +60,55 @@ class _StoresListViewState extends State<_StoresListView> {
   }
 
   Future<void> _load() async {
-    double? lat;
-    double? lng;
-    try {
-      var perm = await Geolocator.checkPermission();
-      if (perm == LocationPermission.denied) {
-        perm = await Geolocator.requestPermission();
-      }
-      if (perm == LocationPermission.whileInUse ||
-          perm == LocationPermission.always) {
-        final pos = await Geolocator.getCurrentPosition();
-        lat = pos.latitude;
-        lng = pos.longitude;
-      }
-    } catch (_) {}
+    final location = await getUserLatLng();
 
     if (!mounted) return;
     context.read<ServiceBloc>().add(
           FetchStoresEvent(
             widget.category.slug,
-            lat: lat,
-            lng: lng,
+            lat: location?.lat,
+            lng: location?.lng,
             listingKind: widget.listingKind,
           ),
         );
+  }
+
+  /// الأقرب أولاً (السيرفر يرتّب لو وصله lat/lng — وهنا نضمن الترتيب عند العميل).
+  List<Store> _sortedNearestFirst(List<Store> stores) {
+    final sorted = List<Store>.of(stores);
+    sorted.sort((a, b) {
+      final da = a.distanceM;
+      final db = b.distanceM;
+      if (da == null && db == null) return 0;
+      if (da == null) return 1;
+      if (db == null) return -1;
+      return da.compareTo(db);
+    });
+    return sorted;
+  }
+
+  /// خدمات الصنايعيه والحرفيين: الضغط على الصنايعي يتصل به مباشرة.
+  Future<void> _callCraftsman(Store store) async {
+    var phone = store.phone;
+    if (PlaceBookingService.normalizePhone(phone) == null) {
+      // قائمة الصنايعية قد لا تحتوي الهاتف — نجلبه من تفاصيل الصنايعي.
+      try {
+        final full = await ServiceRemoteDataSourceImpl().fetchStoreDetails(
+          store.id,
+        );
+        phone = full.phone;
+      } catch (_) {}
+    }
+
+    final ok = await PlaceBookingService.callAndBook(
+      phone: phone,
+      storeId: store.id,
+      kind: 'profession',
+    );
+    if (!mounted || ok) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('لا يوجد رقم اتصال لهذا الصنايعي')),
+    );
   }
 
   @override
@@ -117,7 +144,9 @@ class _StoresListViewState extends State<_StoresListView> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            final stores = state is StoresLoaded ? state.stores : const <Store>[];
+            final stores = state is StoresLoaded
+                ? _sortedNearestFirst(state.stores)
+                : const <Store>[];
 
             return RefreshIndicator(
               onRefresh: _load,
@@ -151,12 +180,18 @@ class _StoresListViewState extends State<_StoresListView> {
                         return NearbyStoreCard(
                           store: store,
                           onTap: () {
+                            if (widget.openMode ==
+                                StoreListOpenMode.profession) {
+                              _callCraftsman(store);
+                              return;
+                            }
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) => StoreDetailsScreen(
                                   storeId: store.id,
                                   openMode: widget.openMode,
+                                  categoryId: widget.category.id,
                                 ),
                               ),
                             );

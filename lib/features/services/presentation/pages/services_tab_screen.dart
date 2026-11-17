@@ -96,7 +96,7 @@ class _ServicesTabScreenState extends State<ServicesTabScreen> {
       appBar: AppBar(
         automaticallyImplyLeading: false,
         title: const Text(
-          'الخدمات',
+          'خدمات الصنايعيه والحرفيين',
           style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
         ),
         centerTitle: true,

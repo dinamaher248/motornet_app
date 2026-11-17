@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:motorent/data/local/cache_helper.dart';
 import 'package:motorent/data/remote/url_api.dart';
+import 'package:motorent/features/services/core/utils/location_util.dart';
 import 'package:motorent/features/services/data/models/service_models.dart';
 import 'package:motorent/features/services/domain/entities/service_entities.dart';
 import 'package:motorent/services/place_booking_service.dart';
@@ -53,11 +54,14 @@ class _ProfessionsTabState extends State<ProfessionsTab> {
     try {
       final token = CacheHelper.getData(key: 'token');
       final q = _search.text.trim();
+      final location = await getUserLatLng();
       final res = await Dio().get(
         servicesProfessionsEP,
         queryParameters: {
           'kind': 'profession',
           if (q.isNotEmpty) 'q': q,
+          if (location != null) 'lat': location.lat,
+          if (location != null) 'lng': location.lng,
         },
         options: Options(
           headers: {
@@ -84,7 +88,16 @@ class _ProfessionsTabState extends State<ProfessionsTab> {
       final items = list
           .whereType<Map>()
           .map((e) => StoreModel.fromJson(Map<String, dynamic>.from(e)))
-          .toList();
+          .toList()
+        // الأقرب أولاً
+        ..sort((a, b) {
+          final da = a.distanceM;
+          final db = b.distanceM;
+          if (da == null && db == null) return 0;
+          if (da == null) return 1;
+          if (db == null) return -1;
+          return da.compareTo(db);
+        });
 
       if (!mounted) return;
       setState(() {

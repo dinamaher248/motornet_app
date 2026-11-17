@@ -120,7 +120,7 @@ class _VendorStoreViewState extends State<_VendorStoreView> {
       case 'bookings':
         return 'الحجوزات';
       case 'services':
-        return 'الخدمات';
+        return 'خدمات الصنايعيه والحرفيين';
       default:
         return 'الطلبات';
     }

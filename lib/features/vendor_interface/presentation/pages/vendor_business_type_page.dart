@@ -152,9 +152,9 @@ class _VendorBusinessTypePageState extends State<VendorBusinessTypePage> {
                       ),
                       const SizedBox(height: 14),
                       _BusinessTypeCard(
-                        title: 'خدمات',
+                        title: 'خدمات الصنايعيه والحرفيين',
                         description:
-                            'لتقديم مهنة أو خدمة حسب الطلب، مثل سباك أو كهربائي أو نجار. العميل يطلب الخدمة وأنت تنفّذها.',
+                            'لتقديم مهنة أو خدمة حسب الطلب، مثل سباك أو كهربائي أو نجار. العميل يتصل بك مباشرة وأنت تنفّذ الخدمة.',
                         icon: Icons.handyman_outlined,
                         accent: const Color(0xFF0C9F6A),
                         loading: _saving,

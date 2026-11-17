@@ -19,10 +19,14 @@ class StoreDetailsScreen extends StatefulWidget {
   final int storeId;
   final StoreListOpenMode openMode;
 
+  /// تصنيف القسم المفتوح منه المكان — يُمرَّر لنموذج الحجز الديناميكي.
+  final int? categoryId;
+
   const StoreDetailsScreen({
     super.key,
     required this.storeId,
     this.openMode = StoreListOpenMode.order,
+    this.categoryId,
   });
 
   @override
@@ -45,6 +49,7 @@ class _StoreDetailsScreenState extends State<StoreDetailsScreen> {
         userLat: _userLat,
         userLng: _userLng,
         openMode: widget.openMode,
+        categoryId: widget.categoryId,
       ),
     );
   }
@@ -78,11 +83,13 @@ class _StoreDetailsView extends StatelessWidget {
   final double? userLat;
   final double? userLng;
   final StoreListOpenMode openMode;
+  final int? categoryId;
 
   const _StoreDetailsView({
     required this.userLat,
     required this.userLng,
     this.openMode = StoreListOpenMode.order,
+    this.categoryId,
   });
 
   String _distanceOf(Store store) {
@@ -323,7 +330,10 @@ class _StoreDetailsView extends StatelessWidget {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (_) => PlaceBookingScreen(storeId: store.id),
+            builder: (_) => PlaceBookingScreen(
+              storeId: store.id,
+              categoryId: store.categoryId ?? categoryId,
+            ),
           ),
         );
       case StoreListOpenMode.order:
@@ -858,16 +868,19 @@ class _ProductCard extends StatelessWidget {
                         ),
                       ),
                     ],
-                    const SizedBox(height: 6),
-                    Text(
-                      '${product.price.toStringAsFixed(0)} ج.م',
-                      style: const TextStyle(
-                        fontFamily: 'Cairo',
-                        fontWeight: FontWeight.w800,
-                        fontSize: 14,
-                        color: AuthTheme.primaryDark,
+                    // السعر يظهر في «الطلبات» فقط — صور الحجوزات بدون سعر
+                    if (showAddButton) ...[
+                      const SizedBox(height: 6),
+                      Text(
+                        '${product.price.toStringAsFixed(0)} ج.م',
+                        style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.w800,
+                          fontSize: 14,
+                          color: AuthTheme.primaryDark,
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ),

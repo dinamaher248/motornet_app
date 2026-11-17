@@ -11,6 +11,7 @@ import 'package:motorent/features/services/presentation/pages/customer_hub_page.
 import 'package:motorent/features/vendor_interface/presentation/pages/vendor_account_screen.dart';
 import 'package:motorent/features/vendor_interface/presentation/pages/vendor_orders_screen.dart';
 import 'package:motorent/features/vendor_interface/presentation/pages/vendor_products_screen.dart';
+import 'package:motorent/features/vendor_interface/presentation/pages/vendor_reservations_screen.dart';
 import 'package:motorent/features/vendor_interface/presentation/pages/vendor_store_screen.dart';
 import 'package:motorent/features/notifications/data/datasources/notification_remote_data_source.dart';
 import 'package:motorent/pages/HistoryPage.dart';
@@ -129,6 +130,8 @@ class _RootShellState extends State<RootShell> {
         _tabs = [
           const _KeepAlive(child: VendorStoreScreen()),
           const _KeepAlive(child: VendorProductsScreen()),
+          // استفسارات الحجز: عرض سعر / غير متوفر / المؤكدة
+          const _KeepAlive(child: VendorReservationsScreen()),
           _KeepAlive(
             child: NotificationsPage(
               refreshToken: _notificationRefreshToken,
@@ -182,7 +185,6 @@ class _RootShellState extends State<RootShell> {
     if (_isDriver) return 2;
     if (_isMerchant) {
       if (_isMerchantServices) return 1;
-      if (_isMerchantBookings) return 2;
       return 3;
     }
     return 1;
@@ -192,7 +194,6 @@ class _RootShellState extends State<RootShell> {
     if (_isDriver) return 3;
     if (_isMerchant) {
       if (_isMerchantServices) return 2;
-      if (_isMerchantBookings) return 3;
       return 4;
     }
     return 4;

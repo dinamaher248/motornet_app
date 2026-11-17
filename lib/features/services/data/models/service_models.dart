@@ -18,6 +18,7 @@ class StoreModel extends Store {
     super.walletOwnerDisplay,
     super.phone,
     super.products,
+    super.categoryId,
   });
 
   factory StoreModel.fromJson(Map<String, dynamic> json) {
@@ -107,6 +108,10 @@ class StoreModel extends Store {
                   json['wallet_owner_name'])
               ?.toString(),
       phone: json['phone']?.toString(),
+      categoryId: _optInt(
+        json['category_id'] ??
+            (json['category'] is Map ? (json['category'] as Map)['id'] : null),
+      ),
       products: productsRaw
           .whereType<Map>()
           .map((e) => ProductModel.fromJson(Map<String, dynamic>.from(e)))
@@ -118,6 +123,13 @@ class StoreModel extends Store {
     if (v is int) return v;
     if (v is num) return v.toInt();
     return int.tryParse(v?.toString() ?? '') ?? 0;
+  }
+
+  static int? _optInt(dynamic v) {
+    if (v == null) return null;
+    if (v is int) return v;
+    if (v is num) return v.toInt();
+    return int.tryParse(v.toString());
   }
 
   static double? _asDouble(dynamic v) {

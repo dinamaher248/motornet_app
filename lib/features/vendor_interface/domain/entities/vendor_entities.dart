@@ -210,13 +210,15 @@ class VendorProduct extends Equatable {
 class CreateVendorProductParams extends Equatable {
   final String name;
   final double price;
-  final String imagePath;
+
+  /// اختيارية في «صور النشاط» (الحجوزات)، ومطلوبة في «المنتجات» (الطلبات).
+  final String? imagePath;
   final String? description;
 
   const CreateVendorProductParams({
     required this.name,
     required this.price,
-    required this.imagePath,
+    this.imagePath,
     this.description,
   });
 

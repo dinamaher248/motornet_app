@@ -234,6 +234,9 @@ class Store extends Equatable {
   final String? phone;
   final List<ServiceProduct> products;
 
+  /// تصنيف النشاط (يُستخدم لجلب حقول نموذج الحجز الديناميكي).
+  final int? categoryId;
+
   const Store({
     required this.id,
     required this.name,
@@ -251,6 +254,7 @@ class Store extends Equatable {
     this.walletOwnerDisplay,
     this.phone,
     this.products = const [],
+    this.categoryId,
   });
 
   String get statusLabel => isOpen ? 'مفتوح الآن' : 'مغلق';
@@ -279,6 +283,7 @@ class Store extends Equatable {
       walletOwnerDisplay: walletOwnerDisplay,
       phone: phone,
       products: products ?? this.products,
+      categoryId: categoryId,
     );
   }
 
@@ -298,6 +303,7 @@ class Store extends Equatable {
         paymentMethods,
         walletNumber,
         products,
+        categoryId,
       ];
 }
 

@@ -178,6 +178,24 @@ String servicesCustomOrderRespondEP(int id) =>
 String vendorCustomOrderOfferEP(int id) =>
     '$BASE_URL/vendor/custom-orders/$id/offer';
 
+// ── الحجوزات الديناميكية (استفسار سعر + عرض سعر من التاجر) ──
+String reservationCategoryFieldsEP(int categoryId) =>
+    '$BASE_URL/reservations/categories/$categoryId/fields';
+const String reservationBookingsEP = '$BASE_URL/reservations/bookings';
+const String reservationMyBookingsEP = '$BASE_URL/reservations/bookings/mine';
+String reservationBookingEP(int id) => '$BASE_URL/reservations/bookings/$id';
+String reservationAcceptEP(int id) =>
+    '$BASE_URL/reservations/bookings/$id/accept';
+String reservationRejectEP(int id) =>
+    '$BASE_URL/reservations/bookings/$id/reject';
+const String merchantReservationsEP = '$BASE_URL/merchant/reservations';
+String merchantReservationEP(int id) =>
+    '$BASE_URL/merchant/reservations/$id';
+String merchantReservationUnavailableEP(int id) =>
+    '$BASE_URL/merchant/reservations/$id/unavailable';
+String merchantReservationQuoteEP(int id) =>
+    '$BASE_URL/merchant/reservations/$id/quote';
+
 const String driverAvailableOrdersEP = '$BASE_URL/driver/available-orders';
 const String driverMyOrdersEP = '$BASE_URL/driver/my-orders';
 String driverCompleteOrderEP(String type, int id) =>

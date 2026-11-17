@@ -5,6 +5,7 @@ import 'package:motorent/data/remote/url_api.dart';
 import 'package:motorent/features/bidding_system/presentation/pages/dynamic_vehicle_select_page.dart';
 import 'package:motorent/features/services/domain/entities/service_entities.dart';
 import 'package:motorent/features/services/hub_access.dart';
+import 'package:motorent/features/services/presentation/pages/my_bookings_screen.dart';
 import 'package:motorent/features/services/presentation/pages/stores_list_screen.dart';
 import 'package:motorent/widgets/auth/auth_theme.dart';
 
@@ -249,6 +250,15 @@ class _CustomerHubPageState extends State<CustomerHubPage> {
               onChanged: _selectTab,
             ),
             const SizedBox(height: 14),
+            if (_tab == 1) ...[
+              _MyBookingsEntry(
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
+                ),
+              ),
+              const SizedBox(height: 14),
+            ],
             if (_loading)
               const Padding(
                 padding: EdgeInsets.only(top: 48),
@@ -395,7 +405,7 @@ class _SectionPills extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const labels = ['طلبات', 'حجوزات', 'خدمات'];
+    const labels = ['طلبات', 'حجوزات', 'خدمات الصنايعيه والحرفيين'];
     return Row(
       children: List.generate(3, (i) {
         final selected = index == i;
@@ -421,10 +431,14 @@ class _SectionPills extends StatelessWidget {
                   ),
                   child: Text(
                     labels[i],
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontFamily: 'Cairo',
                       fontWeight: FontWeight.w800,
-                      fontSize: 14,
+                      fontSize: i == 2 ? 11 : 14,
+                      height: 1.15,
                       color: selected ? Colors.white : AuthTheme.textDark,
                     ),
                   ),
@@ -434,6 +448,75 @@ class _SectionPills extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+}
+
+/// اختصار «حجوزاتي» — متابعة استفسارات الأسعار وقبول/رفض العروض.
+class _MyBookingsEntry extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _MyBookingsEntry({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(16),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: AuthTheme.fieldBorder),
+          ),
+          child: Row(
+            children: [
+              Container(
+                width: 42,
+                height: 42,
+                decoration: BoxDecoration(
+                  color: AuthTheme.primary.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.event_note_outlined,
+                  color: AuthTheme.primary,
+                ),
+              ),
+              const SizedBox(width: 12),
+              const Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'حجوزاتي',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontWeight: FontWeight.w800,
+                        fontSize: 15,
+                        color: AuthTheme.textDark,
+                      ),
+                    ),
+                    SizedBox(height: 2),
+                    Text(
+                      'تابع ردود الأسعار واقبل أو ارفض العروض',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontSize: 12,
+                        color: AuthTheme.textMuted,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.chevron_left, color: AuthTheme.textMuted),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -472,7 +555,7 @@ class _SectionGrid extends StatelessWidget {
           tab == 1
               ? 'لا توجد أقسام حجوزات حالياً'
               : tab == 2
-                  ? 'لا توجد أقسام خدمات حالياً'
+                  ? 'لا توجد أقسام خدمات الصنايعيه والحرفيين حالياً'
                   : 'لا توجد أقسام حالياً',
           textAlign: TextAlign.center,
           style: const TextStyle(
