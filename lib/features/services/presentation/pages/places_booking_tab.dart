@@ -111,7 +111,7 @@ class _PlacesBookingTabState extends State<PlacesBookingTab> {
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 110),
         children: [
           const Text(
-            'احجز ساعة في المكان',
+            'احجز في المكان',
             style: TextStyle(
               fontFamily: 'Cairo',
               fontWeight: FontWeight.w800,

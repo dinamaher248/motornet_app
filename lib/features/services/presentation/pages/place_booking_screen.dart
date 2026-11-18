@@ -152,7 +152,7 @@ class _PlaceBookingScreenState extends State<PlaceBookingScreen> {
                       onPressed: () => setState(() => _showCall = true),
                       icon: const Icon(Icons.schedule),
                       label: const Text(
-                        'حجز ساعة',
+                        'حجز',
                         style: TextStyle(
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.w800,

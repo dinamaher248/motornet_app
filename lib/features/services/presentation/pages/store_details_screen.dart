@@ -309,7 +309,7 @@ class _StoreDetailsView extends StatelessWidget {
 
   String get _primaryLabel {
     return switch (openMode) {
-      StoreListOpenMode.booking => 'حجز ساعة',
+      StoreListOpenMode.booking => 'حجز',
       StoreListOpenMode.profession => 'اتصال',
       StoreListOpenMode.order => 'اطلب أي شيء',
     };
