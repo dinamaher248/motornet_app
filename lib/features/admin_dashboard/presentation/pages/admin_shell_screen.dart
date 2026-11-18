@@ -149,6 +149,7 @@ class _AdminShellScreenState extends State<AdminShellScreen> {
     await CacheHelper.removeData(key: 'id');
     await CacheHelper.removeData(key: 'title');
     await CacheHelper.removeData(key: 'status');
+    await AuthPrefs.clearAccountScopedData();
     await CacheHelper.removeData(key: 'is_admin');
     await CacheHelper.removeData(key: 'admin_permissions');
     await CacheHelper.removeData(key: 'is_super_admin');

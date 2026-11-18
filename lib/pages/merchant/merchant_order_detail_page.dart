@@ -277,6 +277,16 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
 
 
 
+  Future<void> _markReady() async {
+    await _runAction(() => _api.markOrderReady(_order.id));
+    if (!mounted) return;
+    // التوصيل بواسطة المكان: بعد التجهيز نفتح وسائل التوصيل مباشرة؛
+    // بيانات التسليم (عنوان/موقع/هاتف العميل) تُؤخذ من الطلب نفسه على السيرفر.
+    if (_order.isMerchantDelivery && _order.canAssignDriver) {
+      await _pickDriver();
+    }
+  }
+
   void _showProofImage(String? path) {
 
     final url = resolveStorageImageUrl(path);
@@ -671,11 +681,39 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
 
           const SizedBox(height: 20),
 
+          if (_order.canMarkReady && (_order.isPickup || _order.isMerchantDelivery))
+            _actionButton(
+              label: _order.isPickup ? 'تم تجهيز الطلب' : 'تم التجهيز',
+              color: Colors.green,
+              onPressed: _markReady,
+            ),
+          if (_order.isReady && _order.isPickup) ...[
+            const SizedBox(height: 8),
+            _sectionCard(
+              title: 'استلام من المكان',
+              children: [
+                const Text(
+                  'تم إبلاغ العميل أن الطلب جاهز للاستلام. يمكنك الاتصال به.',
+                  style: TextStyle(fontFamily: 'Cairo'),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+            _actionButton(
+              label: 'اتصال بالعميل',
+              color: AuthTheme.primary,
+              onPressed: () => _callPhone(
+                _order.customer.phone ?? _order.customerContactPhone,
+              ),
+            ),
+          ],
           if (_order.canAssignDriver)
 
             _actionButton(
 
-              label: 'اختيار سائق وإرسال الطلب',
+              label: _order.isMerchantDelivery
+                  ? 'اختيار وسيلة التوصيل'
+                  : 'اختيار سائق وإرسال الطلب',
 
               color: AuthTheme.primary,
 

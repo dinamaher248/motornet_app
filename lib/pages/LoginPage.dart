@@ -415,6 +415,18 @@ class _LoginPageState extends State<LoginPage> {
         if (status == 'not_approved' && cachedTitle != 'driver') {
           status = 'success';
         }
+        // حساب جديد على نفس الجهاز: لا نرث قسم النشاط ولا إشعارات الحساب السابق.
+        final previousId = CacheHelper.getData(key: 'id')?.toString();
+        if (previousId != userMap['id']?.toString()) {
+          await AuthPrefs.clearAccountScopedData();
+        }
+        final hubFromServer =
+            (userMap['vendor_hub_section'] ?? '').toString().trim().toLowerCase();
+        if (hubFromServer == 'orders' ||
+            hubFromServer == 'bookings' ||
+            hubFromServer == 'services') {
+          await AuthPrefs.saveVendorHubSection(hubFromServer);
+        }
         await CacheHelper.saveData(key: 'token', value: token);
         await CacheHelper.saveData(key: 'id', value: userMap['id']);
         await CacheHelper.saveData(

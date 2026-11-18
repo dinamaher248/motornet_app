@@ -257,6 +257,8 @@ class ServiceRemoteDataSourceImpl implements ServiceRemoteDataSource {
         'merchant_id': params.storeId,
         'customer_contact_phone': params.contactPhone,
         'delivery_address': params.deliveryAddress,
+        'payment_method': params.paymentMethod,
+        'fulfillment_type': params.fulfillmentType,
         if (params.hasText) 'custom_request_text': params.requestText!.trim(),
         if (params.deliveryLat != null) 'delivery_lat': params.deliveryLat,
         if (params.deliveryLng != null) 'delivery_lng': params.deliveryLng,

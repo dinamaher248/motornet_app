@@ -1,4 +1,5 @@
 import 'package:motorent/data/local/cache_helper.dart';
+import 'package:motorent/services/notification_store.dart';
 
 class AuthPrefs {
   static const String registrationCompletedKey = 'registration_completed';
@@ -51,5 +52,14 @@ class AuthPrefs {
       key: vendorBusinessTypeChosenKey,
       value: true,
     );
+  }
+
+  /// يمسح كل ما يخص الحساب السابق (قسم النشاط + إشعارات الجهاز) كي لا يتسرب لحساب آخر.
+  static Future<void> clearAccountScopedData() async {
+    await CacheHelper.removeData(key: vendorHubSectionKey);
+    await CacheHelper.removeData(key: vendorBusinessTypeChosenKey);
+    try {
+      await NotificationStore.instance.clearAll();
+    } catch (_) {}
   }
 }

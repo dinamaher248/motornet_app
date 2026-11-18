@@ -396,6 +396,8 @@ class SubmitCustomOrderParams extends Equatable {
   final double? deliveryLng;
   final String contactPhone;
   final String? notes;
+  final String paymentMethod;
+  final String fulfillmentType;
 
   const SubmitCustomOrderParams({
     required this.storeId,
@@ -406,6 +408,8 @@ class SubmitCustomOrderParams extends Equatable {
     this.deliveryLng,
     required this.contactPhone,
     this.notes,
+    this.paymentMethod = 'on_delivery',
+    this.fulfillmentType = 'merchant_delivery',
   });
 
   bool get hasText => (requestText ?? '').trim().isNotEmpty;
@@ -423,6 +427,8 @@ class SubmitCustomOrderParams extends Equatable {
         deliveryLng,
         contactPhone,
         notes,
+        paymentMethod,
+        fulfillmentType,
       ];
 }
 

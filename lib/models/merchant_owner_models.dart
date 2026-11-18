@@ -260,6 +260,9 @@ class MerchantServiceOrder {
   final bool canConfirmPayment;
   final bool canRejectPayment;
   final bool canSendOffer;
+  final String? fulfillmentType;
+  final bool isReady;
+  final bool canMarkReady;
   final bool canAssignDriver;
   final bool canContact;
   final String? createdAt;
@@ -294,6 +297,9 @@ class MerchantServiceOrder {
     this.canConfirmPayment = false,
     this.canRejectPayment = false,
     this.canSendOffer = false,
+    this.fulfillmentType,
+    this.isReady = false,
+    this.canMarkReady = false,
     this.canAssignDriver = false,
     this.canContact = false,
     this.createdAt,
@@ -340,6 +346,9 @@ class MerchantServiceOrder {
       canConfirmPayment: json['can_confirm_payment'] == true,
       canRejectPayment: json['can_reject_payment'] == true,
       canSendOffer: json['can_send_offer'] == true,
+      fulfillmentType: json['fulfillment_type']?.toString(),
+      isReady: json['is_ready'] == true,
+      canMarkReady: json['can_mark_ready'] == true,
       canAssignDriver: json['can_assign_driver'] == true,
       canContact: json['can_contact'] == true,
       createdAt: json['created_at']?.toString(),
@@ -347,6 +356,8 @@ class MerchantServiceOrder {
   }
 
   bool get isWallet => paymentMethod == 'wallet';
+  bool get isPickup => fulfillmentType == 'pickup';
+  bool get isMerchantDelivery => fulfillmentType == 'merchant_delivery';
   bool get isPending =>
       canAccept ||
       canReject ||

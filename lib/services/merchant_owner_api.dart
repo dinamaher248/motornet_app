@@ -188,6 +188,17 @@ class MerchantOwnerApi {
     );
   }
 
+  Future<MerchantServiceOrder> markOrderReady(int orderId) async {
+    final response = await _dio.post(
+      merchantOrderReadyEP(orderId),
+      options: _authOptions,
+    );
+    if (response.statusCode != 200) throw Exception(_msg(response));
+    return MerchantServiceOrder.fromJson(
+      response.data['data'] as Map<String, dynamic>,
+    );
+  }
+
   Future<MerchantServiceOrder> rejectOrder(int orderId) async {
     final response = await _dio.post(
       merchantOrderRejectEP(orderId),

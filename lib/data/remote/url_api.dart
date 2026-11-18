@@ -110,6 +110,7 @@ String merchantProductEP(int id) => '$BASE_URL/merchant/products/$id';
 const String merchantOrdersEP = '$BASE_URL/merchant/orders';
 String merchantOrderEP(int id) => '$BASE_URL/merchant/orders/$id';
 String merchantOrderAcceptEP(int id) => '$BASE_URL/merchant/orders/$id/accept';
+String merchantOrderReadyEP(int id) => '$BASE_URL/merchant/orders/$id/ready';
 String merchantOrderRejectEP(int id) => '$BASE_URL/merchant/orders/$id/reject';
 String merchantOrderConfirmPaymentEP(int id) =>
     '$BASE_URL/merchant/orders/$id/confirm-payment';

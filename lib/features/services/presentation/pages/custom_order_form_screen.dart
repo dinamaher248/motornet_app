@@ -45,6 +45,8 @@ class _CustomOrderFormViewState extends State<_CustomOrderFormView> {
   final _notesController = TextEditingController();
 
   String? _imagePath;
+  String _paymentMethod = 'on_delivery';
+  String _fulfillmentType = 'merchant_delivery';
   double? _deliveryLat;
   double? _deliveryLng;
   late final String _accountPhone;
@@ -203,6 +205,8 @@ class _CustomOrderFormViewState extends State<_CustomOrderFormView> {
               deliveryLat: _deliveryLat,
               deliveryLng: _deliveryLng,
               contactPhone: _accountPhone,
+              paymentMethod: _paymentMethod,
+              fulfillmentType: _fulfillmentType,
               notes: _notesController.text.trim().isEmpty
                   ? null
                   : _notesController.text.trim(),
@@ -394,6 +398,51 @@ class _CustomOrderFormViewState extends State<_CustomOrderFormView> {
                     ),
                   ),
                 ),
+              const SizedBox(height: 16),
+              const Text(
+                'طريقة الاستلام',
+                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800),
+              ),
+              RadioListTile<String>(
+                dense: true,
+                value: 'merchant_delivery',
+                groupValue: _fulfillmentType,
+                onChanged: busy ? null : (v) => setState(() => _fulfillmentType = v!),
+                title: const Text('توصيل للعنوان', style: TextStyle(fontFamily: 'Cairo')),
+              ),
+              RadioListTile<String>(
+                dense: true,
+                value: 'pickup',
+                groupValue: _fulfillmentType,
+                onChanged: busy ? null : (v) => setState(() => _fulfillmentType = v!),
+                title: const Text('استلام من المكان', style: TextStyle(fontFamily: 'Cairo')),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'طريقة الدفع',
+                style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800),
+              ),
+              RadioListTile<String>(
+                dense: true,
+                value: 'on_delivery',
+                groupValue: _paymentMethod,
+                onChanged: busy ? null : (v) => setState(() => _paymentMethod = v!),
+                title: const Text('كاش عند الاستلام', style: TextStyle(fontFamily: 'Cairo')),
+              ),
+              RadioListTile<String>(
+                dense: true,
+                value: 'wallet',
+                groupValue: _paymentMethod,
+                onChanged: busy ? null : (v) => setState(() => _paymentMethod = v!),
+                title: const Text('محفظة إلكترونية', style: TextStyle(fontFamily: 'Cairo')),
+              ),
+              RadioListTile<String>(
+                dense: true,
+                value: 'insta',
+                groupValue: _paymentMethod,
+                onChanged: busy ? null : (v) => setState(() => _paymentMethod = v!),
+                title: const Text('إنستا باي', style: TextStyle(fontFamily: 'Cairo')),
+              ),
               const SizedBox(height: 12),
               TextField(
                 controller: _phoneController,

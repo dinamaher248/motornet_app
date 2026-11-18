@@ -188,6 +188,7 @@ class _ProfileViewState extends State<_ProfileView> {
     await CacheHelper.removeData(key: 'id');
     await CacheHelper.removeData(key: 'title');
     await CacheHelper.removeData(key: 'status');
+    await AuthPrefs.clearAccountScopedData();
     await CacheHelper.putBoolean(
       key: AuthPrefs.registrationCompletedKey,
       value: true,
