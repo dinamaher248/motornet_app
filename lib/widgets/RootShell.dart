@@ -1,6 +1,8 @@
 import 'dart:async';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:motorent/data/remote/url_api.dart';
 import 'package:motorent/data/local/auth_prefs.dart';
 import 'package:motorent/data/local/cache_helper.dart';
 import 'package:motorent/features/admin_dashboard/presentation/pages/admin_shell_screen.dart';
@@ -41,8 +43,8 @@ class _RootShellState extends State<RootShell> {
   late final bool _isAdmin;
   late final bool _isDriver;
   late final bool _isMerchant;
-  late final bool _isMerchantServices;
-  late final bool _isMerchantBookings;
+  late bool _isMerchantServices;
+  late bool _isMerchantBookings;
 
   late List<Widget> _tabs;
 
@@ -63,6 +65,7 @@ class _RootShellState extends State<RootShell> {
     _isMerchantBookings =
         _isMerchant && AuthPrefs.isVendorBookingsMode;
     _buildTabs();
+    if (_isMerchant) unawaited(_syncMerchantSection());
     _loadUnreadCount();
     _notificationSub =
         NotificationStore.instance.changes.listen((_) => _loadUnreadCount());
@@ -71,6 +74,50 @@ class _RootShellState extends State<RootShell> {
         unawaited(PendingRatingService.promptIfNeeded(context));
       }
     });
+  }
+
+  /// قسم النشاط مصدره السيرفر (حسب تصنيف النشاط/المستخدم) وليس الكاش المحلي،
+  /// فنقرأه عند فتح الواجهة ونعيد بناء التبويبات لو اختلف عن المخزّن.
+  Future<void> _syncMerchantSection() async {
+    try {
+      final response = await Dio().get(
+        vendorStoreProfileEP,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer ${CacheHelper.getData(key: 'token')}',
+            'Accept': 'application/json',
+          },
+          receiveTimeout: const Duration(seconds: 15),
+          sendTimeout: const Duration(seconds: 15),
+          validateStatus: (s) => s != null && s < 600,
+        ),
+      );
+      if (response.statusCode != 200 || response.data is! Map) return;
+      final root = Map<String, dynamic>.from(response.data as Map);
+      final nested = root['data'] is Map
+          ? Map<String, dynamic>.from(root['data'] as Map)
+          : root;
+      final merchant = nested['merchant'] is Map
+          ? Map<String, dynamic>.from(nested['merchant'] as Map)
+          : nested;
+      final hub = (nested['vendor_hub_section'] ??
+              merchant['category_hub_section'] ??
+              '')
+          .toString()
+          .trim()
+          .toLowerCase();
+      if (hub != 'orders' && hub != 'bookings' && hub != 'services') return;
+      if (hub == AuthPrefs.vendorHubSection) return;
+      await AuthPrefs.saveVendorHubSection(hub);
+      if (!mounted) return;
+      setState(() {
+        _isMerchantServices = AuthPrefs.isVendorServicesMode;
+        _isMerchantBookings = AuthPrefs.isVendorBookingsMode;
+        _currentIndex = 0;
+        _buildTabs();
+      });
+      if (_pageController.hasClients) _pageController.jumpToPage(0);
+    } catch (_) {}
   }
 
   Future<void> _loadUnreadCount() async {
