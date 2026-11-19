@@ -66,7 +66,7 @@
             android:value="AIzaSyCLQZJ8VewAWok-9_a55Ag35K5892vOoPg"/>
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="fcm_data_channel" />
+            android:value="fcm_sound_channel_v2" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
             android:resource="@drawable/app_notification_icon" />

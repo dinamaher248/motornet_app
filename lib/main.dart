@@ -82,10 +82,12 @@ Future<void> _setupFirebaseServices() async {
     );
 
     const AndroidNotificationChannel channel = AndroidNotificationChannel(
-      'fcm_data_channel',
+      'fcm_sound_channel_v2',
       'إشعارات التطبيق',
       description: 'قناة إشعارات توصيلة برو',
       importance: Importance.max,
+      playSound: true,
+      enableVibration: true,
     );
 
     await flutterLocalNotificationsPlugin
@@ -292,11 +294,13 @@ Future<void> _showNotification(RemoteMessage message) async {
   );
 
   const AndroidNotificationDetails androidDetails = AndroidNotificationDetails(
-    'fcm_data_channel',
+    'fcm_sound_channel_v2',
     'إشعارات التطبيق',
     channelDescription: 'قناة إشعارات توصيلة برو',
     importance: Importance.max,
     priority: Priority.high,
+    playSound: true,
+    enableVibration: true,
     icon: '@drawable/app_notification_icon',
   );
 

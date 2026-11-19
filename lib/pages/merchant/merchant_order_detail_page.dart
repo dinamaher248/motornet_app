@@ -13,6 +13,8 @@ import 'package:motorent/widgets/rating_stars.dart';
 import 'package:motorent/pages/order_tracking/active_order_tracking_page.dart';
 
 import 'package:url_launcher/url_launcher.dart';
+import 'package:motorent/features/bidding_system/presentation/pages/bidding_home_page.dart';
+import 'package:motorent/features/vendor_interface/domain/entities/vendor_order_dispatch_prefill.dart';
 
 
 
@@ -155,6 +157,54 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
 
 
 
+  /// يفتح شاشة «وسائل المواصلات / مشوار سريع» ببيانات الطلب معبأة تلقائياً:
+  /// التسليم = عنوان/موقع العميل، الاستلام = عنوان المكان (قابل للتعديل).
+  Future<void> _openTransport() async {
+    final o = _order;
+    final dropoff = VendorOrderDispatchPrefill.formatDeliveryAddress(
+      o.deliveryAddress,
+    );
+    final pickup = (o.storeAddress ?? '').trim().isNotEmpty
+        ? o.storeAddress!.trim()
+        : 'موقع النشاط';
+    final prefill = VendorOrderDispatchPrefill(
+      orderId: o.id,
+      orderType: o.orderType,
+      dropoffAddress: dropoff.isNotEmpty ? dropoff : o.deliveryAddress,
+      dropoffLat: o.deliveryLat,
+      dropoffLng: o.deliveryLng,
+      pickupAddress: pickup,
+      pickupLat: o.storeLat,
+      pickupLng: o.storeLng,
+      customerPhone: o.customer.phone ?? o.customerContactPhone,
+      orderDescription: 'توصيل طلب #${o.id}',
+    );
+    await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'وسائل المواصلات / مشوار سريع',
+              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
+            ),
+            centerTitle: true,
+          ),
+          body: Container(
+            decoration: AuthTheme.screenBackground(),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 28),
+              child: BiddingHomePage(
+                embedInParent: true,
+                vendorDispatch: prefill,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Future<void> _pickDriver() async {
 
     setState(() => _acting = true);
@@ -269,7 +319,7 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
     // التوصيل بواسطة المكان: بعد التجهيز نفتح وسائل التوصيل مباشرة؛
     // بيانات التسليم (عنوان/موقع/هاتف العميل) تُؤخذ من الطلب نفسه على السيرفر.
     if (_order.isMerchantDelivery && _order.canAssignDriver) {
-      await _pickDriver();
+      await _openTransport();
     }
   }
 
@@ -703,7 +753,7 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
 
               color: AuthTheme.primary,
 
-              onPressed: _pickDriver,
+              onPressed: _openTransport,
 
             ),
 

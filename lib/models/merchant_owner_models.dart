@@ -247,6 +247,11 @@ class MerchantServiceOrder {
   final String? customerContactPhone;
   final String deliveryAddress;
   final String? deliveryDetails;
+  final double? deliveryLat;
+  final double? deliveryLng;
+  final String? storeAddress;
+  final double? storeLat;
+  final double? storeLng;
   final String paymentMethod;
   final String paymentMethodLabel;
   final String? paymentProof;
@@ -283,6 +288,11 @@ class MerchantServiceOrder {
     this.notes,
     this.customerContactPhone,
     required this.deliveryAddress,
+    this.deliveryLat,
+    this.deliveryLng,
+    this.storeAddress,
+    this.storeLat,
+    this.storeLng,
     this.deliveryDetails,
     required this.paymentMethod,
     required this.paymentMethodLabel,
@@ -327,6 +337,11 @@ class MerchantServiceOrder {
       customerContactPhone: json['customer_contact_phone']?.toString(),
       deliveryAddress: json['delivery_address']?.toString() ?? '',
       deliveryDetails: json['delivery_details']?.toString(),
+      deliveryLat: double.tryParse(json['delivery_lat']?.toString() ?? ''),
+      deliveryLng: double.tryParse(json['delivery_lng']?.toString() ?? ''),
+      storeAddress: json['store_address']?.toString(),
+      storeLat: double.tryParse(json['store_lat']?.toString() ?? ''),
+      storeLng: double.tryParse(json['store_lng']?.toString() ?? ''),
       paymentMethod: json['payment_method']?.toString() ?? '',
       paymentMethodLabel: json['payment_method_label']?.toString() ?? '',
       paymentProof: json['payment_proof']?.toString(),
