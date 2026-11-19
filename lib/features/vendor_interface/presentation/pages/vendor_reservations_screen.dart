@@ -348,7 +348,7 @@ class _ReservationCard extends StatelessWidget {
 }
 
 class _QuoteInput {
-  final double price;
+  final double? price;
   final String details;
 
   const _QuoteInput(this.price, this.details);
@@ -393,7 +393,10 @@ class _QuoteDialogState extends State<_QuoteDialog> {
     if (!_formKey.currentState!.validate()) return;
     Navigator.pop(
       context,
-      _QuoteInput(_parsePrice()!, _detailsCtrl.text.trim()),
+      _QuoteInput(
+        (_parsePrice() ?? 0) > 0 ? _parsePrice() : null,
+        _detailsCtrl.text.trim(),
+      ),
     );
   }
 
@@ -420,11 +423,13 @@ class _QuoteDialogState extends State<_QuoteDialog> {
                 ],
                 decoration: const InputDecoration(
                   labelText: 'السعر (ج.م)',
+                  helperText: 'اتركه فارغاً إن كان غير متوفر',
                   border: OutlineInputBorder(),
                 ),
                 validator: (v) {
+                  if (v == null || v.trim().isEmpty) return null; // فاضي = غير متوفر
                   final price = _parsePrice();
-                  if (price == null || price <= 0) return 'أدخل سعراً صحيحاً';
+                  if (price == null || price < 0) return 'أدخل سعراً صحيحاً';
                   return null;
                 },
               ),
@@ -439,8 +444,13 @@ class _QuoteDialogState extends State<_QuoteDialog> {
                   alignLabelWithHint: true,
                   border: OutlineInputBorder(),
                 ),
-                validator: (v) =>
-                    (v == null || v.trim().isEmpty) ? 'اكتب تفاصيل العرض' : null,
+                validator: (v) {
+                  final hasPrice = (_parsePrice() ?? 0) > 0;
+                  if (!hasPrice) return null;
+                  return (v == null || v.trim().isEmpty)
+                      ? 'اكتب تفاصيل العرض'
+                      : null;
+                },
               ),
             ],
           ),

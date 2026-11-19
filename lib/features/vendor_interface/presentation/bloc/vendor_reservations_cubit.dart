@@ -108,7 +108,7 @@ class VendorReservationsCubit extends Cubit<VendorReservationsState> {
 
   Future<void> sendQuote({
     required int id,
-    required double price,
+    double? price,
     required String details,
   }) async {
     if (state.busyId != null) return;

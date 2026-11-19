@@ -276,6 +276,7 @@ class _CustomerServiceOrderDetailPageState
               ]),
             ],
             if (o.status == 'offer_sent' ||
+                o.status == 'offer_unavailable' ||
                 o.status == 'priced' ||
                 o.canAcceptOffer ||
                 o.canRejectOffer) ...[
@@ -288,7 +289,7 @@ class _CustomerServiceOrderDetailPageState
                   )
                 else
                   const Text(
-                    'الطلب غير متوفر بالكامل',
+                    'غير متوفر حالياً',
                     style: TextStyle(
                       color: Colors.red,
                       fontWeight: FontWeight.w700,
@@ -297,7 +298,9 @@ class _CustomerServiceOrderDetailPageState
                 if ((o.merchantOfferNotes ?? '').isNotEmpty)
                   _row('ملاحظات المتجر', o.merchantOfferNotes!),
               ]),
-              if (o.canAcceptOffer || o.canRejectOffer) ...[
+              if ((o.canAcceptOffer || o.canRejectOffer) &&
+                  o.merchantOfferPrice != null &&
+                  o.merchantOfferPrice! > 0) ...[
                 const SizedBox(height: 16),
                 if (o.canAcceptOffer)
                   SizedBox(

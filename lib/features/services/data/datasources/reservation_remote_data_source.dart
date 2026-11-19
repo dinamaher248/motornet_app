@@ -154,17 +154,20 @@ class ReservationRemoteDataSource {
 
   Future<String> sendQuote({
     required int id,
-    required double quotedPrice,
+    double? quotedPrice,
     required String quoteDetails,
   }) =>
       _post(
         merchantReservationQuoteEP(id),
         data: {
-          'quoted_price': quotedPrice,
+          if (quotedPrice != null && quotedPrice > 0)
+            'quoted_price': quotedPrice,
           'quote_details': quoteDetails,
         },
         fallback: 'تعذر إرسال السعر',
-        success: 'تم إرسال السعر والتفاصيل للعميل',
+        success: quotedPrice != null && quotedPrice > 0
+            ? 'تم إرسال السعر والتفاصيل للعميل'
+            : 'تم إبلاغ العميل بعدم التوفر',
       );
 
   // ─────────────────────────── مساعدات ───────────────────────────

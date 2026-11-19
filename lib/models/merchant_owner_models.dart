@@ -374,6 +374,7 @@ class MerchantServiceOrder {
       status == 'cancelled' ||
       status == 'rejected' ||
       status == 'merchant_rejected' ||
+      status == 'offer_unavailable' ||
       status == 'offer_rejected';
 
   /// بعد قبول التاجر ولحد التسليم — لسه جاري مش مكتمل.

@@ -283,6 +283,7 @@ class ServiceOrderItem {
       status == 'cancelled' ||
       status == 'rejected' ||
       status == 'merchant_rejected' ||
+      status == 'offer_unavailable' ||
       status == 'offer_rejected';
 
   bool get needsAction =>

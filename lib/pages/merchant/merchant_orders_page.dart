@@ -224,6 +224,7 @@ class _MerchantOrdersPageState extends State<MerchantOrdersPage> {
       fg = Colors.orange.shade800;
     } else if (order.status == 'merchant_rejected' ||
         order.status == 'cancelled' ||
+        order.status == 'offer_unavailable' ||
         order.status == 'offer_rejected') {
       bg = Colors.red.shade50;
       fg = Colors.red.shade800;

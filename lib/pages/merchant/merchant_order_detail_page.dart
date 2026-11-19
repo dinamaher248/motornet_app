@@ -137,21 +137,7 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
 
 
 
-    if ((price == null || price <= 0) && notes.isEmpty) {
 
-      ScaffoldMessenger.of(context).showSnackBar(
-
-        const SnackBar(
-
-          content: Text('أدخل السعر أو اكتب ملاحظة توضح عدم التوفر'),
-
-        ),
-
-      );
-
-      return;
-
-    }
 
 
 

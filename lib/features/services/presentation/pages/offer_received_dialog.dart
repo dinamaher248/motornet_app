@@ -105,7 +105,7 @@ class _OfferReceivedBody extends StatelessWidget {
                     Text(
                       price != null
                           ? '${price.toStringAsFixed(0)} ج.م'
-                          : 'غير متوفر',
+                          : 'غير متوفر حالياً',
                       style: const TextStyle(
                         fontFamily: 'Cairo',
                         fontWeight: FontWeight.w900,
@@ -140,7 +140,20 @@ class _OfferReceivedBody extends StatelessWidget {
             ],
           ),
           actionsAlignment: MainAxisAlignment.spaceEvenly,
-          actions: [
+          actions: (price == null || price <= 0)
+              ? [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context),
+                    child: const Text(
+                      'حسناً',
+                      style: TextStyle(
+                        fontFamily: 'Cairo',
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                  ),
+                ]
+              : [
             TextButton(
               onPressed: busy
                   ? null
@@ -261,7 +274,7 @@ class OfferReceivedScreen extends StatelessWidget {
                         Text(
                           price != null
                               ? '${price.toStringAsFixed(0)} ج.م'
-                              : 'غير متوفر',
+                              : 'غير متوفر حالياً',
                           style: const TextStyle(
                             fontFamily: 'Cairo',
                             fontWeight: FontWeight.w900,
@@ -293,6 +306,21 @@ class OfferReceivedScreen extends StatelessWidget {
                     ),
                   ],
                   const Spacer(),
+                  if (price == null || price <= 0)
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text(
+                          'حسناً',
+                          style: TextStyle(
+                            fontFamily: 'Cairo',
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    )
+                  else
                   Row(
                     children: [
                       Expanded(
