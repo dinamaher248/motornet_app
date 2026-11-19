@@ -222,6 +222,14 @@ class ReservationRemoteDataSource {
         if (value is Map && value['data'] is List) {
           return value['data'] as List;
         }
+        // {data: {fields: [...]}} — نبحث داخل الخريطة عن أي مفتاح مطلوب يحمل قائمة.
+        if (value is Map) {
+          for (final inner in keys) {
+            if (inner != key && value[inner] is List) {
+              return value[inner] as List;
+            }
+          }
+        }
       }
     }
     return const [];

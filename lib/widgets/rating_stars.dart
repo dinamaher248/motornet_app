@@ -81,7 +81,19 @@ Future<bool> submitRating({
     ),
   );
 
-  return response.statusCode == 200 || response.statusCode == 201;
+  if (response.statusCode == 200 || response.statusCode == 201) return true;
+  String msg = 'تعذر حفظ التقييم';
+  final body = response.data;
+  if (body is Map) {
+    final m = body['message'];
+    if (m is String && m.trim().isNotEmpty) msg = m;
+    final errs = body['errors'];
+    if (errs is Map && errs.isNotEmpty) {
+      final first = errs.values.first;
+      if (first is List && first.isNotEmpty) msg = first.first.toString();
+    }
+  }
+  throw Exception(msg);
 }
 
 Future<void> showRateSheet(

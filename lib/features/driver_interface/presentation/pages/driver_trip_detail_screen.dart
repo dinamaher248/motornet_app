@@ -167,7 +167,7 @@ class DriverTripDetailScreen extends StatelessWidget {
             );
             return;
           }
-          if (msg.contains('رفض الطلب') && context.mounted) {
+          if ((msg.contains('رفض الطلب') || msg.contains('إلغاء')) && context.mounted) {
             Navigator.pop(context);
           }
         },
@@ -480,9 +480,12 @@ class DriverTripDetailScreen extends StatelessWidget {
                               final ok = await showDialog<bool>(
                                 context: context,
                                 builder: (ctx) => AlertDialog(
-                                  title: const Text(
-                                    'رفض الطلب',
-                                    style: TextStyle(fontFamily: 'Cairo'),
+                                  title: Text(
+                                    (current.offerStatus ?? '').toLowerCase() ==
+                                            'rejected'
+                                        ? 'إلغاء الرحلة'
+                                        : 'رفض الطلب',
+                                    style: const TextStyle(fontFamily: 'Cairo'),
                                   ),
                                   content: const Text(
                                     'لن يظهر لك هذا الطلب مرة أخرى.',
@@ -511,9 +514,11 @@ class DriverTripDetailScreen extends StatelessWidget {
                                     );
                               }
                             },
-                      child: const Text(
-                        'رفض الطلب',
-                        style: TextStyle(
+                      child: Text(
+                        (current.offerStatus ?? '').toLowerCase() == 'rejected'
+                            ? 'إلغاء الرحلة'
+                            : 'رفض الطلب',
+                        style: const TextStyle(
                           fontFamily: 'Cairo',
                           fontWeight: FontWeight.w800,
                           color: Color(0xFFB42318),

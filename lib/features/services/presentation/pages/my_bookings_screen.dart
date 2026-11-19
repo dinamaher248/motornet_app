@@ -1,3 +1,4 @@
+import 'package:motorent/widgets/rating_stars.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:motorent/features/services/domain/entities/reservation_entities.dart';
@@ -238,6 +239,23 @@ class _BookingCard extends StatelessWidget {
             ),
           ],
           if (b.isQuoted || b.isConfirmed) ..._quoteSection(),
+          if (b.isConfirmed && b.merchantId != null) ...[
+            const SizedBox(height: 8),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: () => showRateSheet(
+                  context,
+                  title: 'قيّم المكان',
+                  contextType: 'reservation_booking',
+                  contextId: b.id,
+                  rateeMerchantId: b.merchantId,
+                ),
+                icon: const Icon(Icons.star_outline),
+                label: const Text('قيّم المكان'),
+              ),
+            ),
+          ],
         ],
       ),
     );

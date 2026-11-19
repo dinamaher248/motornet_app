@@ -131,11 +131,13 @@ class _ActiveOrderTrackingPageState extends State<ActiveOrderTrackingPage> {
     _ratingShown = true;
     final ratee = data.rateeUserId;
     if (ratee == null || ratee <= 0) return;
-    final contextType = data.type == 'bidding_trip'
-        ? 'bidding_trip'
-        : data.type == 'service_order'
-            ? 'service_order'
-            : 'trip_request';
+    const supported = {
+      'bidding_trip',
+      'service_order',
+      'ride_book',
+      'trip_request',
+    };
+    final contextType = supported.contains(data.type) ? data.type : 'trip_request';
     await showRateSheet(
       context,
       title: widget.isDriverView ? 'قيّم العميل' : 'قيّم السائق',
@@ -143,27 +145,6 @@ class _ActiveOrderTrackingPageState extends State<ActiveOrderTrackingPage> {
       contextId: data.id,
       rateeUserId: ratee,
     );
-  }
-
-  Future<void> _handToDriver() async {
-    setState(() => _acting = true);
-    try {
-      final data = await _api.handToDriver(widget.type, widget.id);
-      if (!mounted) return;
-      setState(() {
-        _data = data;
-        _acting = false;
-      });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('تم تأكيد تسليم الطلب للسائق')),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _acting = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
-      );
-    }
   }
 
   Future<void> _endOrder() async {
@@ -752,27 +733,6 @@ class _ActiveOrderTrackingPageState extends State<ActiveOrderTrackingPage> {
                               ),
                             ],
                           ] else ...[
-                            if (data.canHandToDriver) ...[
-                              const SizedBox(height: 10),
-                              SizedBox(
-                                width: double.infinity,
-                                height: 50,
-                                child: ElevatedButton(
-                                  onPressed: _acting ? null : _handToDriver,
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: const Color(0xFF0C9F6A),
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  child: const Text(
-                                    'تم تسليم الطلب للسائق',
-                                    style: TextStyle(
-                                      fontFamily: 'Cairo',
-                                      fontWeight: FontWeight.w800,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
                             if (data.showEndOrderButton) ...[
                               const SizedBox(height: 10),
                               SizedBox(
