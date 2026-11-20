@@ -76,6 +76,7 @@ class ReservationBooking extends Equatable {
   bool get isConfirmed => status == 'confirmed';
   bool get isRejected => status == 'rejected';
   bool get isUnavailable => status == 'unavailable';
+  bool get isCancelled => status == 'cancelled';
 
   String get statusLabel {
     if (isPendingQuote) return 'بانتظار رد المكان';
@@ -83,6 +84,7 @@ class ReservationBooking extends Equatable {
     if (isConfirmed) return 'تم تأكيد الحجز';
     if (isRejected) return 'تم رفض العرض';
     if (isUnavailable) return 'غير متوفر حالياً';
+    if (isCancelled) return 'ملغي';
     return status;
   }
 

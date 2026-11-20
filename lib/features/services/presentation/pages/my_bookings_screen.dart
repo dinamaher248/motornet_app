@@ -5,6 +5,7 @@ import 'package:motorent/features/services/domain/entities/reservation_entities.
 import 'package:motorent/features/services/presentation/cubit/reservation_cubits.dart';
 import 'package:motorent/features/services/presentation/widgets/reservation_answers_view.dart';
 import 'package:motorent/widgets/auth/auth_theme.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// «حجوزاتي» — استفسارات الأسعار وعروض الأسعار والحجوزات المؤكدة للعميل.
 class MyBookingsScreen extends StatelessWidget {
@@ -118,23 +119,23 @@ class _MyBookingsView extends StatelessWidget {
                           final cubit = context.read<MyBookingsCubit>();
                           final ok = await _confirm(
                             context,
-                            title: 'قبول العرض',
+                            title: 'تأكيد الحجز',
                             body: 'هل تريد قبول السعر وتأكيد الحجز؟',
-                            action: 'قبول',
+                            action: 'تأكيد',
                             actionColor: const Color(0xFF0C9F6A),
                           );
                           if (ok) cubit.accept(b.id);
                         },
-                        onReject: () async {
+                        onCancel: () async {
                           final cubit = context.read<MyBookingsCubit>();
                           final ok = await _confirm(
                             context,
-                            title: 'رفض العرض',
-                            body: 'هل تريد رفض هذا العرض؟',
-                            action: 'رفض',
+                            title: 'إلغاء الحجز',
+                            body: 'هل تريد إلغاء هذا الحجز؟',
+                            action: 'إلغاء الحجز',
                             actionColor: Colors.red,
                           );
-                          if (ok) cubit.reject(b.id);
+                          if (ok) cubit.cancel(b.id);
                         },
                       );
                     },
@@ -150,13 +151,13 @@ class _BookingCard extends StatelessWidget {
   final ReservationBooking booking;
   final bool busy;
   final VoidCallback onAccept;
-  final VoidCallback onReject;
+  final VoidCallback onCancel;
 
   const _BookingCard({
     required this.booking,
     required this.busy,
     required this.onAccept,
-    required this.onReject,
+    required this.onCancel,
   });
 
   Color get _statusColor {
@@ -239,6 +240,37 @@ class _BookingCard extends StatelessWidget {
             ),
           ],
           if (b.isQuoted || b.isConfirmed) ..._quoteSection(),
+          if (b.isConfirmed) ...[
+            const SizedBox(height: 10),
+            Row(
+              children: [
+                Expanded(child: _callButton()),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 46,
+                    child: OutlinedButton(
+                      onPressed: busy ? null : onCancel,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: const Text(
+                        'إلغاء الحجز',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
           if (b.isConfirmed && b.merchantId != null) ...[
             const SizedBox(height: 8),
             SizedBox(
@@ -257,6 +289,28 @@ class _BookingCard extends StatelessWidget {
             ),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _callButton() {
+    final phone = (booking.merchantPhone ?? '').trim();
+    return SizedBox(
+      height: 46,
+      child: OutlinedButton.icon(
+        onPressed: phone.isEmpty
+            ? null
+            : () => launchUrl(Uri.parse('tel:$phone')),
+        icon: const Icon(Icons.call, size: 18),
+        label: const Text(
+          'اتصال',
+          style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w800),
+        ),
+        style: OutlinedButton.styleFrom(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+          ),
+        ),
       ),
     );
   }
@@ -322,7 +376,7 @@ class _BookingCard extends StatelessWidget {
                           ),
                         )
                       : const Text(
-                          'قبول',
+                          'تأكيد الحجز',
                           style: TextStyle(
                             fontFamily: 'Cairo',
                             fontWeight: FontWeight.w800,
@@ -332,28 +386,7 @@ class _BookingCard extends StatelessWidget {
               ),
             ),
             const SizedBox(width: 10),
-            Expanded(
-              child: SizedBox(
-                height: 46,
-                child: OutlinedButton(
-                  onPressed: busy ? null : onReject,
-                  style: OutlinedButton.styleFrom(
-                    foregroundColor: Colors.red,
-                    side: const BorderSide(color: Colors.red),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child: const Text(
-                    'رفض',
-                    style: TextStyle(
-                      fontFamily: 'Cairo',
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            Expanded(child: _callButton()),
           ],
         ),
       ],

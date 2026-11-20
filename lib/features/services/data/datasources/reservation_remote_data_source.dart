@@ -109,6 +109,18 @@ class ReservationRemoteDataSource {
         success: 'تم تأكيد الحجز',
       );
 
+  Future<String> cancelBooking(int id) => _post(
+        reservationCustomerCancelEP(id),
+        fallback: 'تعذر إلغاء الحجز',
+        success: 'تم إلغاء الحجز',
+      );
+
+  Future<String> cancelMerchantBooking(int id) => _post(
+        merchantReservationCancelEP(id),
+        fallback: 'تعذر إلغاء الحجز',
+        success: 'تم إلغاء الحجز',
+      );
+
   Future<String> rejectQuote(int id) => _post(
         reservationRejectEP(id),
         fallback: 'تعذر رفض العرض',

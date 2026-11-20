@@ -106,6 +106,17 @@ class VendorReservationsCubit extends Cubit<VendorReservationsState> {
     }
   }
 
+  Future<void> cancelBooking(int id) async {
+    if (state.busyId != null) return;
+    emit(state.copyWith(busyId: id));
+    try {
+      final message = await dataSource.cancelMerchantBooking(id);
+      emit(await _fetch(message: message));
+    } catch (e) {
+      emit(state.copyWith(clearBusy: true, message: _errorText(e)));
+    }
+  }
+
   Future<void> sendQuote({
     required int id,
     double? price,

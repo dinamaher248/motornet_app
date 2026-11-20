@@ -187,6 +187,10 @@ const String reservationMyBookingsEP = '$BASE_URL/reservations/bookings/mine';
 String reservationBookingEP(int id) => '$BASE_URL/reservations/bookings/$id';
 String reservationAcceptEP(int id) =>
     '$BASE_URL/reservations/bookings/$id/accept';
+String reservationCustomerCancelEP(int id) =>
+    '$BASE_URL/reservations/bookings/$id/cancel';
+String merchantReservationCancelEP(int id) =>
+    '$BASE_URL/merchant/reservations/$id/cancel';
 String reservationRejectEP(int id) =>
     '$BASE_URL/reservations/bookings/$id/reject';
 const String merchantReservationsEP = '$BASE_URL/merchant/reservations';

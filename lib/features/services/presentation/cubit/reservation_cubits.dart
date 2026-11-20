@@ -177,6 +177,22 @@ class MyBookingsCubit extends Cubit<MyBookingsState> {
 
   Future<void> reject(int id) => _respond(id, accept: false);
 
+  Future<void> cancel(int id) async {
+    if (state.busyId != null) return;
+    emit(state.copyWith(busyId: id));
+    try {
+      final message = await dataSource.cancelBooking(id);
+      final list = await dataSource.fetchMyBookings();
+      emit(MyBookingsState(
+        status: MyBookingsStatus.loaded,
+        bookings: list,
+        message: message,
+      ));
+    } catch (e) {
+      emit(state.copyWith(clearBusy: true, message: _errorText(e)));
+    }
+  }
+
   Future<void> _respond(int id, {required bool accept}) async {
     if (state.busyId != null) return;
     emit(state.copyWith(busyId: id));

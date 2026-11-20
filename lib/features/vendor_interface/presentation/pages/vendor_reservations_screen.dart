@@ -74,6 +74,37 @@ class _VendorReservationsView extends StatelessWidget {
     if (ok == true) await cubit.markUnavailable(booking.id);
   }
 
+  Future<void> _confirmCancel(
+    BuildContext context,
+    ReservationBooking booking,
+  ) async {
+    final cubit = context.read<VendorReservationsCubit>();
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('إلغاء الحجز', style: TextStyle(fontFamily: 'Cairo')),
+        content: const Text(
+          'سيتم إبلاغ العميل بإلغاء الحجز. هل تريد المتابعة؟',
+          style: TextStyle(fontFamily: 'Cairo'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('رجوع', style: TextStyle(fontFamily: 'Cairo')),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text(
+              'إلغاء الحجز',
+              style: TextStyle(fontFamily: 'Cairo', color: Colors.red),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) await cubit.cancelBooking(booking.id);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -152,6 +183,7 @@ class _VendorReservationsView extends StatelessWidget {
                             actionable: actionable,
                             onUnavailable: () => _confirmUnavailable(context, b),
                             onQuote: () => _openQuoteDialog(context, b),
+                            onCancel: () => _confirmCancel(context, b),
                           );
                         },
                       ),
@@ -190,6 +222,7 @@ class _ReservationCard extends StatelessWidget {
   final bool actionable;
   final VoidCallback onUnavailable;
   final VoidCallback onQuote;
+  final VoidCallback onCancel;
 
   const _ReservationCard({
     required this.booking,
@@ -197,6 +230,7 @@ class _ReservationCard extends StatelessWidget {
     required this.actionable,
     required this.onUnavailable,
     required this.onQuote,
+    required this.onCancel,
   });
 
   Future<void> _callCustomer(BuildContext context) async {
@@ -235,7 +269,7 @@ class _ReservationCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (b.isConfirmed && hasPhone)
+              if (false && hasPhone)
                 IconButton(
                   tooltip: 'اتصال بالعميل',
                   onPressed: () => _callCustomer(context),
@@ -276,6 +310,57 @@ class _ReservationCard extends StatelessWidget {
                   style: const TextStyle(fontFamily: 'Cairo', height: 1.5),
                 ),
               ),
+          ],
+          if (b.isQuoted || b.isConfirmed) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 46,
+                    child: OutlinedButton.icon(
+                      onPressed: hasPhone ? () => _callCustomer(context) : null,
+                      icon: const Icon(Icons.call, size: 18),
+                      label: const Text(
+                        'اتصال',
+                        style: TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                      style: OutlinedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: SizedBox(
+                    height: 46,
+                    child: OutlinedButton(
+                      onPressed: busy ? null : onCancel,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: Colors.red,
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(
+                        b.isConfirmed ? 'إلغاء الحجز' : 'إلغاء',
+                        style: const TextStyle(
+                          fontFamily: 'Cairo',
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ],
           if (actionable && b.isPendingQuote) ...[
             const SizedBox(height: 12),
