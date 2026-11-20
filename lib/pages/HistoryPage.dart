@@ -6,6 +6,7 @@ import 'package:motorent/features/bidding_system/presentation/pages/trip_details
 import 'package:motorent/pages/order_tracking/active_order_tracking_page.dart';
 import 'package:motorent/pages/ride_book_mid_page.dart';
 import 'package:motorent/widgets/app_logo.dart';
+import 'package:motorent/features/services/presentation/pages/my_bookings_screen.dart';
 
 class HistoryPage extends StatefulWidget {
   final int refreshToken;
@@ -267,7 +268,7 @@ class _HistoryPageState extends State<HistoryPage> {
           SizedBox(height: MediaQuery.of(context).size.height * 0.2),
           Center(
             child: Text(
-              'لا يوجد سجل للرحلات حتى الآن',
+              'لا يوجد سجل عمليات حتى الآن',
               style: TextStyle(
                 color: Colors.grey[600],
                 fontSize: 14,
@@ -392,14 +393,16 @@ class _HistoryPageState extends State<HistoryPage> {
               ],
             ),
             const SizedBox(height: 8),
-            Text(
-              'الاستلام: ${item.pickLoc ?? '-'}',
-              style: const TextStyle(fontSize: 13),
-            ),
-            Text(
-              'الوصول: ${item.targetLoc ?? '-'}',
-              style: const TextStyle(fontSize: 13),
-            ),
+            if ((item.pickLoc ?? '').isNotEmpty)
+              Text(
+                '${item.type == 'service_order' || item.type == 'reservation_booking' ? 'المكان' : 'الاستلام'}: ${item.pickLoc}',
+                style: const TextStyle(fontSize: 13),
+              ),
+            if ((item.targetLoc ?? '').isNotEmpty)
+              Text(
+                '${item.type == 'service_order' ? 'التسليم' : 'الوصول'}: ${item.targetLoc}',
+                style: const TextStyle(fontSize: 13),
+              ),
             if ((item.msg ?? '').isNotEmpty) ...[
               const SizedBox(height: 4),
               Text(
@@ -460,6 +463,11 @@ class _HistoryPageState extends State<HistoryPage> {
         MaterialPageRoute(
           builder: (_) => TripDetailsScreen(tripId: item.id),
         ),
+      );
+    } else if (type == 'reservation_booking') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
       );
     } else if (type == 'ride_book') {
       final isDriver = role == 'driver';
