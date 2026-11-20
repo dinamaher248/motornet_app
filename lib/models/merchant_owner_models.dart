@@ -269,6 +269,8 @@ class MerchantServiceOrder {
   final bool isReady;
   final bool canMarkReady;
   final bool canAssignDriver;
+  final bool canDeliver;
+  final bool dispatched;
   final bool canContact;
   final String? createdAt;
 
@@ -311,6 +313,8 @@ class MerchantServiceOrder {
     this.isReady = false,
     this.canMarkReady = false,
     this.canAssignDriver = false,
+    this.canDeliver = false,
+    this.dispatched = false,
     this.canContact = false,
     this.createdAt,
   });
@@ -365,6 +369,8 @@ class MerchantServiceOrder {
       isReady: json['is_ready'] == true,
       canMarkReady: json['can_mark_ready'] == true,
       canAssignDriver: json['can_assign_driver'] == true,
+      canDeliver: json['can_deliver'] == true,
+      dispatched: json['dispatched'] == true,
       canContact: json['can_contact'] == true,
       createdAt: json['created_at']?.toString(),
     );

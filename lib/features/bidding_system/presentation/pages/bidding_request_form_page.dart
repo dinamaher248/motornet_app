@@ -82,7 +82,11 @@ class _BiddingRequestFormViewState extends State<_BiddingRequestFormView> {
     final prefill = widget.vendorDispatch;
     if (prefill != null) {
       _pickupController.text = prefill.pickupAddress;
-      _dropoffController.text = prefill.dropoffAddress;
+      // عنوان التسليم = موقع العميل على الخريطة (إحداثيات)، والنص المكتوب = العنوان التفصيلي
+      _dropoffController.text = prefill.hasDropoffPoint ? '' : prefill.dropoffAddress;
+      if (prefill.hasDropoffPoint) {
+        _dropoffDetailsController.text = prefill.dropoffAddress;
+      }
       _descriptionController.text = prefill.orderDescription;
       if (prefill.hasPickupPoint) {
         _pickupPoint = LatLng(prefill.pickupLat!, prefill.pickupLng!);
@@ -107,6 +111,18 @@ class _BiddingRequestFormViewState extends State<_BiddingRequestFormView> {
   Future<void> _resolveMissingCoordinates() async {
     final prefill = widget.vendorDispatch;
     if (prefill == null) return;
+
+    if (_dropoffPoint != null && _dropoffController.text.trim().isEmpty) {
+      try {
+        final addr = await GoogleMapsService.reverseGeocode(_dropoffPoint!);
+        if (mounted && addr.trim().isNotEmpty) {
+          setState(() => _dropoffController.text = addr);
+        }
+      } catch (_) {}
+      if (mounted && _dropoffController.text.trim().isEmpty) {
+        setState(() => _dropoffController.text = prefill.dropoffAddress);
+      }
+    }
 
     if (_dropoffPoint == null && prefill.dropoffAddress.trim().isNotEmpty) {
       final suggestions = await GoogleMapsService.autocomplete(

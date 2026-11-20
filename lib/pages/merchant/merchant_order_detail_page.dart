@@ -105,7 +105,7 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
 
       );
 
-      if (!_order.isPending && !_order.isCustom) {
+      if (!_order.isPending && !_order.isCustom && !_order.canDeliver) {
 
         Navigator.pop(context, true);
 
@@ -203,6 +203,10 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
         ),
       ),
     );
+    try {
+      final fresh = await _api.fetchOrder(_order.id);
+      if (mounted) setState(() => _order = fresh);
+    } catch (_) {}
   }
 
   Future<void> _pickDriver() async {
@@ -312,6 +316,31 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
   }
 
 
+
+  Future<void> _markDelivered() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('تم التسليم', style: TextStyle(fontFamily: 'Cairo')),
+        content: const Text(
+          'هل تم تسليم الطلب للعميل؟ سيتم إنهاء الطلب وإبلاغ العميل.',
+          style: TextStyle(fontFamily: 'Cairo'),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('رجوع'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('تأكيد'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await _runAction(() => _api.markOrderDelivered(_order.id));
+  }
 
   Future<void> _markReady() async {
     await _runAction(() => _api.markOrderReady(_order.id));
@@ -741,6 +770,21 @@ class _MerchantOrderDetailPageState extends State<MerchantOrderDetailPage> {
               onPressed: () => _callPhone(
                 _order.customer.phone ?? _order.customerContactPhone,
               ),
+            ),
+          ],
+          if (_order.canDeliver && _order.isReady) ...[
+            const SizedBox(height: 8),
+            _actionButton(
+              label: 'تم التسليم',
+              color: Colors.green,
+              onPressed: _markDelivered,
+            ),
+          ],
+          if (_order.dispatched && !_order.canAssignDriver) ...[
+            const SizedBox(height: 8),
+            const Text(
+              'تم إرسال الطلب للسائقين — بانتظار قبول سائق.',
+              style: TextStyle(fontFamily: 'Cairo', fontWeight: FontWeight.w700),
             ),
           ],
           if (_order.canAssignDriver)

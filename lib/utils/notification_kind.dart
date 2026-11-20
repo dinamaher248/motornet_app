@@ -42,6 +42,8 @@ class NotificationKind {
         return 'طلب جديد';
       case serviceOrderSent:
         return 'تم إرسال الطلب';
+      case 'service_order_ready':
+        return 'طلبك جاهز';
       case serviceOrderStatus:
       case serviceDriverAssigned:
         return 'تحديث في حالة الطلب';

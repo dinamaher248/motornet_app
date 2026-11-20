@@ -438,6 +438,14 @@ class NotificationNavigator {
     }
   }
 
+  /// رقم هاتف داخل نص الإشعار (يُستخدم لزر «اتصال» في إشعار الجاهزية).
+  static String? _phoneIn(String text) {
+    final m = RegExp(r'اتصال:\s*(\+?\d[\d\s-]{7,})').firstMatch(text);
+    if (m == null) return null;
+    final cleaned = m.group(1)!.replaceAll(RegExp(r'[^\d+]'), '');
+    return cleaned.length >= 8 ? cleaned : null;
+  }
+
   static void _showDetailsSheet(BuildContext context, NotificationItem item) {
     showModalBottomSheet(
       context: context,
@@ -500,6 +508,19 @@ class NotificationNavigator {
                     style: const TextStyle(
                       fontSize: 12,
                       color: AuthTheme.textMuted,
+                    ),
+                  ),
+                ],
+                if (_phoneIn(item.description) != null) ...[
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: () => launchUrl(
+                        Uri(scheme: 'tel', path: _phoneIn(item.description)),
+                      ),
+                      icon: const Icon(Icons.call),
+                      label: const Text('اتصال'),
                     ),
                   ),
                 ],

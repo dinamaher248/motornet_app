@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:motorent/features/bidding_system/bidding_injection.dart';
 import 'package:motorent/features/bidding_system/domain/entities/bidding_trip.dart';
 import 'package:motorent/features/bidding_system/presentation/pages/trip_details_screen.dart';
+import 'package:motorent/features/services/data/datasources/reservation_remote_data_source.dart';
+import 'package:motorent/features/services/presentation/pages/my_bookings_screen.dart';
 import 'package:motorent/models/home_response.dart';
 import 'package:motorent/pages/order_tracking/active_order_tracking_page.dart';
 import 'package:motorent/pages/services/customer_service_order_detail_page.dart';
@@ -140,6 +142,27 @@ class _CustomerActiveOrdersSectionState
       });
     } catch (_) {}
 
+    // 3) الحجوزات المؤكدة تظهر ضمن العمليات الجارية
+    try {
+      final bookings = await ReservationRemoteDataSource().fetchMyBookings();
+      for (final b in bookings) {
+        if (!b.isConfirmed) continue;
+        final o = HomeOrder(
+          id: b.id,
+          type: 'reservation_booking',
+          title: b.merchantName.isEmpty ? 'حجز #${b.id}' : 'حجز — ${b.merchantName}',
+          amount: b.quotedPrice,
+          msg: b.quoteDetails,
+          pickLoc: b.merchantName,
+          status: 'confirmed',
+          statusLabel: 'تم تأكيد الحجز',
+          isActive: true,
+          createdAt: b.createdAt?.toString(),
+        );
+        merged[_key(o)] = o;
+      }
+    } catch (_) {}
+
     if (!mounted) {
       _fetching = false;
       return;
@@ -165,6 +188,11 @@ class _CustomerActiveOrdersSectionState
       await Navigator.push(
         context,
         MaterialPageRoute(builder: (_) => TripDetailsScreen(tripId: id)),
+      );
+    } else if (type == 'reservation_booking') {
+      await Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
       );
     } else if (type == 'ride_book') {
       ScaffoldMessenger.of(context).showSnackBar(
