@@ -44,6 +44,19 @@ class NotificationKind {
         return 'تم إرسال الطلب';
       case 'service_order_ready':
         return 'طلبك جاهز';
+      case 'reservation_quoted':
+        return 'عرض سعر على حجزك';
+      case 'new_reservation_booking':
+        return 'طلب حجز جديد';
+      case 'reservation_confirmed':
+        return 'تأكيد حجز';
+      case 'reservation_unavailable':
+        return 'غير متوفر';
+      case 'reservation_cancelled':
+      case 'reservation_customer_cancelled':
+        return 'إلغاء حجز';
+      case 'reservation_rejected':
+        return 'رفض عرض الحجز';
       case serviceOrderStatus:
       case serviceDriverAssigned:
         return 'تحديث في حالة الطلب';

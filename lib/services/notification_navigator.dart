@@ -11,6 +11,8 @@ import 'package:motorent/features/driver_interface/presentation/pages/driver_tri
 import 'package:motorent/features/services/domain/entities/service_entities.dart';
 import 'package:motorent/features/services/presentation/pages/offer_received_dialog.dart';
 import 'package:motorent/features/vendor_interface/presentation/pages/vendor_orders_screen.dart';
+import 'package:motorent/features/vendor_interface/presentation/pages/vendor_reservations_screen.dart';
+import 'package:motorent/features/services/presentation/pages/my_bookings_screen.dart';
 import 'package:motorent/pages/merchant/merchant_order_detail_page.dart';
 import 'package:motorent/pages/services/customer_service_order_detail_page.dart';
 import 'package:motorent/pages/order_tracking/active_order_tracking_page.dart';
@@ -119,6 +121,31 @@ class NotificationNavigator {
       case NotificationKind.serviceOrderRejected:
       case NotificationKind.serviceDriverAssigned:
         return _openServiceOrderNotification(context, action, item.refId);
+
+      // إشعارات الحجز: العميل ← «حجوزاتي»، صاحب النشاط ← «الحجوزات»
+      case 'reservation_quoted':
+      case 'reservation_unavailable':
+      case 'reservation_cancelled':
+      case 'reservation_rejected_by_owner':
+        if (!context.mounted) return false;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const MyBookingsScreen()),
+        );
+        return true;
+
+      case 'new_reservation_booking':
+      case 'reservation_confirmed':
+      case 'reservation_rejected':
+      case 'reservation_customer_cancelled':
+        if (!context.mounted) return false;
+        await Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const VendorReservationsScreen(),
+          ),
+        );
+        return true;
 
       case NotificationKind.adminAlert:
         return false;
